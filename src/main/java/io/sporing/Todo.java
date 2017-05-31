@@ -20,5 +20,4 @@ public class Todo {
     private Long id;
     private String todo;
     private boolean completed;
-
 }
