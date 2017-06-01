@@ -1,6 +1,8 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
+node_modules
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
