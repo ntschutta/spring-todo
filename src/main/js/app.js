@@ -25,7 +25,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <TodoList todos={this.state.todos} onDelete={this.onDelete}/>
+            <TodoList todos={this.state.todos} onDelete={this.onDelete} onUpdate={this.onUpdate}/>
         )
     }
     onDelete(todo) {
@@ -34,7 +34,12 @@ class App extends React.Component {
         });
     }
     onUpdate(todo) {
-        client({method: 'PUT', path: todo._links.self.href}).then(response => {
+        client({
+            method: 'PUT',
+            path: todo._links.self.href,
+            entity: todo,
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
             this.getTodos();
         });
     }
@@ -48,7 +53,7 @@ class TodoList extends React.Component{
 
     render() {
         var todos = this.props.todos.map(todo =>
-            <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.props.onDelete}/>
+            <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.props.onDelete} onUpdate={this.props.onUpdate}/>
         );
         return (
             <table>
@@ -68,16 +73,25 @@ class TodoItem extends React.Component{
     constructor(props) {
         super(props);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleUpdate = this.handleUpdate.bind(this);
     }
 
     handleDelete() {
         this.props.onDelete(this.props.todo);
     }
 
+    handleUpdate(event) {
+        console.log(this.state);
+        console.log(this.props);
+        //console.log(event.target.value);
+        this.props.todo.todo = event.target.value;
+        this.props.onUpdate(this.props.todo);
+    }
+
     render() {
         return (
             <tr>
-                <td>{this.props.todo.todo}</td>
+                <td><input name="todo-text" type="text" value={this.props.todo.todo} onChange={this.handleUpdate}/> </td>
                 <td>{this.props.todo.completed.toString()}</td>
                 <td>
                     <button onClick={this.handleDelete}>Delete</button>

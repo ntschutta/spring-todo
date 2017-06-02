@@ -10605,6 +10605,7 @@ var App = function (_React$Component) {
 
         _this.state = { todos: [] };
         _this.onDelete = _this.onDelete.bind(_this);
+        _this.onUpdate = _this.onUpdate.bind(_this);
         return _this;
     }
 
@@ -10625,7 +10626,7 @@ var App = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            return React.createElement(TodoList, { todos: this.state.todos, onDelete: this.onDelete });
+            return React.createElement(TodoList, { todos: this.state.todos, onDelete: this.onDelete, onUpdate: this.onUpdate });
         }
     }, {
         key: 'onDelete',
@@ -10634,6 +10635,20 @@ var App = function (_React$Component) {
 
             client({ method: 'DELETE', path: todo._links.self.href }).then(function (response) {
                 _this3.getTodos();
+            });
+        }
+    }, {
+        key: 'onUpdate',
+        value: function onUpdate(todo) {
+            var _this4 = this;
+
+            client({
+                method: 'PUT',
+                path: todo._links.self.href,
+                entity: todo,
+                headers: { 'Content-Type': 'application/json' }
+            }).then(function (response) {
+                _this4.getTodos();
             });
         }
     }]);
@@ -10653,10 +10668,10 @@ var TodoList = function (_React$Component2) {
     _createClass(TodoList, [{
         key: 'render',
         value: function render() {
-            var _this5 = this;
+            var _this6 = this;
 
             var todos = this.props.todos.map(function (todo) {
-                return React.createElement(TodoItem, { key: todo._links.self.href, todo: todo, onDelete: _this5.props.onDelete });
+                return React.createElement(TodoItem, { key: todo._links.self.href, todo: todo, onDelete: _this6.props.onDelete, onUpdate: _this6.props.onUpdate });
             });
             return React.createElement(
                 'table',
@@ -10693,16 +10708,26 @@ var TodoItem = function (_React$Component3) {
     function TodoItem(props) {
         _classCallCheck(this, TodoItem);
 
-        var _this6 = _possibleConstructorReturn(this, (TodoItem.__proto__ || Object.getPrototypeOf(TodoItem)).call(this, props));
+        var _this7 = _possibleConstructorReturn(this, (TodoItem.__proto__ || Object.getPrototypeOf(TodoItem)).call(this, props));
 
-        _this6.handleDelete = _this6.handleDelete.bind(_this6);
-        return _this6;
+        _this7.handleDelete = _this7.handleDelete.bind(_this7);
+        _this7.handleUpdate = _this7.handleUpdate.bind(_this7);
+        return _this7;
     }
 
     _createClass(TodoItem, [{
         key: 'handleDelete',
         value: function handleDelete() {
             this.props.onDelete(this.props.todo);
+        }
+    }, {
+        key: 'handleUpdate',
+        value: function handleUpdate(event) {
+            console.log(this.state);
+            console.log(this.props);
+            //console.log(event.target.value);
+            this.props.todo.todo = event.target.value;
+            this.props.onUpdate(this.props.todo);
         }
     }, {
         key: 'render',
@@ -10713,7 +10738,8 @@ var TodoItem = function (_React$Component3) {
                 React.createElement(
                     'td',
                     null,
-                    this.props.todo.todo
+                    React.createElement('input', { name: 'todo-text', type: 'text', value: this.props.todo.todo, onChange: this.handleUpdate }),
+                    ' '
                 ),
                 React.createElement(
                     'td',
