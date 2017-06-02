@@ -3,6 +3,7 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const client = require('./client');
+import update from 'immutability-helper';
 
 class App extends React.Component {
 
@@ -74,25 +75,48 @@ class TodoItem extends React.Component{
         super(props);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleUpdate = this.handleUpdate.bind(this);
+        this.toggleCompleted = this.toggleCompleted.bind(this);
+        this.state = {myTodo: this.props.todo};
     }
 
     handleDelete() {
-        this.props.onDelete(this.props.todo);
+        this.props.onDelete(this.state.myTodo);
     }
 
     handleUpdate(event) {
+        const updatedTodo = update(this.state.myTodo, {
+            todo: {$set: event.target.value}
+        })
+        this.setState({
+            myTodo: updatedTodo
+        })
+        this.props.onUpdate(updatedTodo);
+    }
+
+    toggleCompleted(event) {
         console.log(this.state);
         console.log(this.props);
-        //console.log(event.target.value);
-        this.props.todo.todo = event.target.value;
-        this.props.onUpdate(this.props.todo);
+        console.log(event.target)
+        const updatedTodo = update(this.state.myTodo, {
+            completed: {$set: event.target.checked}
+        })
+        this.setState({
+            myTodo: updatedTodo
+        })
+        this.props.onUpdate(updatedTodo);
     }
 
     render() {
         return (
             <tr>
-                <td><input name="todo-text" type="text" value={this.props.todo.todo} onChange={this.handleUpdate}/> </td>
-                <td>{this.props.todo.completed.toString()}</td>
+                <td><input name="todo-text" type="text" value={this.state.myTodo.todo} onChange={this.handleUpdate}/> </td>
+                <td>
+                    <input
+                    className="toggle"
+                    type="checkbox"
+                    checked={this.state.myTodo.completed}
+                    onChange={this.toggleCompleted} />
+                </td>
                 <td>
                     <button onClick={this.handleDelete}>Delete</button>
                 </td>
