@@ -10604,12 +10604,18 @@ var App = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
         _this.state = { todos: [] };
+        _this.onDelete = _this.onDelete.bind(_this);
         return _this;
     }
 
     _createClass(App, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
+            this.getTodos();
+        }
+    }, {
+        key: 'getTodos',
+        value: function getTodos() {
             var _this2 = this;
 
             client({ method: 'GET', path: '/todos' }).then(function (response) {
@@ -10619,7 +10625,16 @@ var App = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            return React.createElement(TodoList, { todos: this.state.todos });
+            return React.createElement(TodoList, { todos: this.state.todos, onDelete: this.onDelete });
+        }
+    }, {
+        key: 'onDelete',
+        value: function onDelete(todo) {
+            var _this3 = this;
+
+            client({ method: 'DELETE', path: todo._links.self.href }).then(function (response) {
+                _this3.getTodos();
+            });
         }
     }]);
 
@@ -10629,17 +10644,19 @@ var App = function (_React$Component) {
 var TodoList = function (_React$Component2) {
     _inherits(TodoList, _React$Component2);
 
-    function TodoList() {
+    function TodoList(props) {
         _classCallCheck(this, TodoList);
 
-        return _possibleConstructorReturn(this, (TodoList.__proto__ || Object.getPrototypeOf(TodoList)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (TodoList.__proto__ || Object.getPrototypeOf(TodoList)).call(this, props));
     }
 
     _createClass(TodoList, [{
         key: 'render',
         value: function render() {
+            var _this5 = this;
+
             var todos = this.props.todos.map(function (todo) {
-                return React.createElement(TodoItem, { key: todo._links.self.href, todo: todo });
+                return React.createElement(TodoItem, { key: todo._links.self.href, todo: todo, onDelete: _this5.props.onDelete });
             });
             return React.createElement(
                 'table',
@@ -10673,13 +10690,21 @@ var TodoList = function (_React$Component2) {
 var TodoItem = function (_React$Component3) {
     _inherits(TodoItem, _React$Component3);
 
-    function TodoItem() {
+    function TodoItem(props) {
         _classCallCheck(this, TodoItem);
 
-        return _possibleConstructorReturn(this, (TodoItem.__proto__ || Object.getPrototypeOf(TodoItem)).apply(this, arguments));
+        var _this6 = _possibleConstructorReturn(this, (TodoItem.__proto__ || Object.getPrototypeOf(TodoItem)).call(this, props));
+
+        _this6.handleDelete = _this6.handleDelete.bind(_this6);
+        return _this6;
     }
 
     _createClass(TodoItem, [{
+        key: 'handleDelete',
+        value: function handleDelete() {
+            this.props.onDelete(this.props.todo);
+        }
+    }, {
         key: 'render',
         value: function render() {
             return React.createElement(
@@ -10694,6 +10719,15 @@ var TodoItem = function (_React$Component3) {
                     'td',
                     null,
                     this.props.todo.completed.toString()
+                ),
+                React.createElement(
+                    'td',
+                    null,
+                    React.createElement(
+                        'button',
+                        { onClick: this.handleDelete },
+                        'Delete'
+                    )
                 )
             );
         }
