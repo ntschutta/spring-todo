@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TodosLoader implements CommandLineRunner {
-    private final TodoListRepository repository;
+    private final TodoRepository repository;
 
     @Autowired
-    public TodosLoader(TodoListRepository repository) {
+    public TodosLoader(TodoRepository repository) {
         this.repository = repository;
     }
 

@@ -8,6 +8,6 @@ import java.util.List;
  * Created by nschutta on 5/31/17.
  */
 @RepositoryRestResource(collectionResourceRel = "todos", path = "todos")
-public interface TodoListRepository extends JpaRepository <Todo, Long> {
+public interface TodoRepository extends JpaRepository <Todo, Long> {
     List<Todo> findAll();
 }
