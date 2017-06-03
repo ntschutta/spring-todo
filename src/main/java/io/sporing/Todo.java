@@ -3,10 +3,7 @@ package io.sporing;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by nschutta on 5/31/17.
@@ -23,7 +20,11 @@ public class Todo {
     private String todo;
     private boolean completed;
 
-    public Todo(String todo, boolean completed) {
+    @ManyToOne
+    private TodoList todoList;
+
+    public Todo(TodoList list, String todo, boolean completed) {
+        this.todoList = list;
         this.todo = todo;
         this.completed = completed;
     }
