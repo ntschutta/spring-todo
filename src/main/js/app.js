@@ -3,13 +3,14 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const client = require('./client');
+const follow = require('./follow');
 import update from 'immutability-helper';
 
 class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {todos:[], links: {}};
+        this.state = {todos:[], links: {}, todoList:[], listLinks:{}};
         this.onDelete = this.onDelete.bind(this);
         this.onUpdate = this.onUpdate.bind(this);
         this.onAdd = this.onAdd.bind(this);
@@ -26,20 +27,32 @@ class App extends React.Component {
                 todos: response.entity._embedded.todos,
                 links: response.entity._links
             });
-            console.log("todos:");
-            console.log(this.state.todos);
-            console.log("links");
-            console.log(this.state.links);
         });
-        console.log("todos:");
-        console.log(this.state.todos);
+        
+        client({method: 'GET', path: '/todoList'}).then(response => {
+            console.log("getTodo lists");
+            this.setState({
+                todoList: response.entity._embedded.todoList,
+                listLinks: response.entity._links
+            });
+        });
+
+        console.log("todo list:");
+        console.log(this.state.todoList);
         console.log("links");
-        console.log(this.state.links);
+        console.log(this.state.listLinks);
     }
 
     render() {
+        console.log("render");
+        console.log(todoList);
+        var todoList = this.state.todoList.map((todoList, index) =>
+            <TodoList key={todoList._links.self.href} todos={this.state.todos} title={this.state.todoList[index].title} onDelete={this.onDelete} onUpdate={this.onUpdate} onAdd={this.onAdd}/>
+        );
         return (
-            <TodoList todos={this.state.todos} onDelete={this.onDelete} onUpdate={this.onUpdate} onAdd={this.onAdd}/>
+            <ul>
+                {todoList}
+            </ul>
         )
     }
     onDelete(todo) {
@@ -78,7 +91,7 @@ class TodoList extends React.Component{
         super(props);
         this.addTodo = this.addTodo.bind(this);
         this.handleChangeTodo = this.handleChangeTodo.bind(this);
-        this.state = {newTodo: "", completed: false}
+        this.state = {newTodo: "", completed: false, title: "Missing"}
     }
 
     addTodo(event) {
@@ -101,6 +114,7 @@ class TodoList extends React.Component{
         );
         return (
             <span>
+                <h1>{this.props.title}</h1>
             <table>
                 <tbody>
                 <tr>
