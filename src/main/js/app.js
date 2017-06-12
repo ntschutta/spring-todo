@@ -55,6 +55,9 @@ class TodoList extends React.Component{
         super(props);
         this.onDelete = this.onDelete.bind(this);
         this.onUpdate = this.onUpdate.bind(this);
+        this.onAdd = this.onAdd.bind(this);
+        this.addTodo = this.addTodo.bind(this);
+        this.handleChangeTodo = this.handleChangeTodo.bind(this);
         this.state = {todos:[], links: {}, newTodo: "", completed: false, title: "Missing"}
     }
     componentDidMount() {
@@ -81,6 +84,22 @@ class TodoList extends React.Component{
         });
     }
 
+    onAdd(newTodo) {
+        console.log("in on Add")
+        console.log(this.state.todos);
+        console.log(this.state.links.self.href);
+        console.log(newTodo);
+        client({
+            method: 'POST',
+            path: '/todos',
+            entity: newTodo,
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            this.getTodos();
+        });
+    }
+
+
     getTodos() {
         console.log("getTodos");
         console.log(this.props.todoList);
@@ -92,6 +111,22 @@ class TodoList extends React.Component{
                 links: response.entity._links
             });
         });
+    }
+
+    addTodo(event) {
+        console.log("adding todo...");
+        console.log(event);
+        const newTodo = {todo: this.state.newTodo, completed: false, todoList: this.props.todoList._links.self.href}
+        this.onAdd(newTodo);
+        this.setState({newTodo: "", completed: false});
+    }
+
+    handleChangeTodo(event) {
+        console.log("handle change todo");
+        console.log(event);
+        console.log(event.target.value);
+        console.log(this);
+        this.setState({newTodo: event.target.value, completed: false});
     }
 
     render(){
@@ -110,6 +145,15 @@ class TodoList extends React.Component{
                 {todos}
                 </tbody>
             </table>
+                <input
+                    placeholder="What needs to be done?"
+                    value={this.state.newTodo}
+                    // onKeyDown={this.handleNewTodoKeyDown}
+                    onChange={this.handleChangeTodo}
+                    autoFocus={true}
+                    name="newTodo"
+                />
+            <button onClick={this.addTodo}>Add Todo</button>
             </span>
         )
     }
