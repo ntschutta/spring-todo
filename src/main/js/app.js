@@ -10,25 +10,16 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {todos:[], links: {}, todoList:[], listLinks:{}};
-        this.onDelete = this.onDelete.bind(this);
-        this.onUpdate = this.onUpdate.bind(this);
-        this.onAdd = this.onAdd.bind(this);
+        this.state = {todoList:[], listLinks:{}};
     }
 
     componentDidMount() {
-        this.getTodos();
+        this.getTodoLists();
     }
 
-    getTodos() {
-        console.log("getTodos");
-        client({method: 'GET', path: '/todos'}).then(response => {
-            this.setState({
-                todos: response.entity._embedded.todos,
-                links: response.entity._links
-            });
-        });
-        
+    getTodoLists() {
+        console.log("getTodoLists");
+
         client({method: 'GET', path: '/todoList'}).then(response => {
             console.log("getTodo lists");
             this.setState({
@@ -47,74 +38,47 @@ class App extends React.Component {
         console.log("render");
         console.log(todoList);
         var todoList = this.state.todoList.map((todoList, index) =>
-            <TodoList key={todoList._links.self.href} todos={this.state.todos} title={this.state.todoList[index].title} onDelete={this.onDelete} onUpdate={this.onUpdate} onAdd={this.onAdd}/>
+            <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} />
         );
         return (
+            <span>
             <ul>
                 {todoList}
             </ul>
+            </span>
         )
     }
-    onDelete(todo) {
-        client({method: 'DELETE', path: todo._links.self.href}).then(response => {
-            this.getTodos();
-        });
-    }
-    onUpdate(todo) {
-        client({
-            method: 'PUT',
-            path: todo._links.self.href,
-            entity: todo,
-            headers: {'Content-Type': 'application/json'}
-        }).then(response => {
-            this.getTodos();
-        });
-    }
-
-    onAdd(newTodo) {
-        console.log("in on Add")
-        console.log(this.state.todos);
-        client({
-            method: 'POST',
-            path: this.state.links.self.href,
-            entity: newTodo,
-            headers: {'Content-Type': 'application/json'}
-        }).then(response => {
-            this.getTodos();
-        });
-    }
-
 }
 
 class TodoList extends React.Component{
     constructor(props) {
         super(props);
-        this.addTodo = this.addTodo.bind(this);
-        this.handleChangeTodo = this.handleChangeTodo.bind(this);
-        this.state = {newTodo: "", completed: false, title: "Missing"}
+        this.state = {todos:[], links: {}, newTodo: "", completed: false, title: "Missing"}
+    }
+    componentDidMount() {
+        this.getTodos();
     }
 
-    addTodo(event) {
-        console.log("adding todo...");
-        console.log(event);
-        const newTodo = {todo: this.state.newTodo, completed: false}
-        this.props.onAdd(newTodo);
-        this.setState({newTodo: "", completed: false});
+    getTodos() {
+        console.log("getTodos");
+        console.log(this.props.todoList);
+
+        client({method: 'GET', path: this.props.todoList._links.todos.href,}).then(response => {
+            console.log("getTodo lists");
+            this.setState({
+                todos: response.entity._embedded.todos,
+                links: response.entity._links
+            });
+        });
     }
 
-    handleChangeTodo(event) {
-        console.log("handle change todo");
-        console.log(event);
-        this.setState({newTodo: event.target.value, completed: false});
-    }
-
-    render() {
-        var todos = this.props.todos.map(todo =>
+    render(){
+        var todos = this.state.todos.map(todo =>
             <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.props.onDelete} onUpdate={this.props.onUpdate} />
         );
         return (
             <span>
-                <h1>{this.props.title}</h1>
+                <h1>{this.props.todoList.title}</h1>
             <table>
                 <tbody>
                 <tr>
@@ -123,17 +87,7 @@ class TodoList extends React.Component{
                 </tr>
                 {todos}
                 </tbody>
-
             </table>
-            <input
-        placeholder="What needs to be done?"
-        value={this.state.newTodo}
-        // onKeyDown={this.handleNewTodoKeyDown}
-        onChange={this.handleChangeTodo}
-        autoFocus={true}
-        name="newTodo"
-            />
-            <button onClick={this.addTodo}>Add</button>
             </span>
         )
     }
@@ -178,10 +132,10 @@ class TodoItem extends React.Component{
                 <td><input name="todo-text" type="text" value={this.state.myTodo.todo} onChange={this.handleUpdate}/> </td>
                 <td>
                     <input
-                    className="toggle"
-                    type="checkbox"
-                    checked={this.state.myTodo.completed}
-                    onChange={this.toggleCompleted} />
+                        className="toggle"
+                        type="checkbox"
+                        checked={this.state.myTodo.completed}
+                        onChange={this.toggleCompleted} />
                 </td>
                 <td>
                     <button onClick={this.handleDelete}>Delete</button>
@@ -190,6 +144,7 @@ class TodoItem extends React.Component{
         )
     }
 }
+
 ReactDOM.render(
     <App />,
     document.getElementById('react')
