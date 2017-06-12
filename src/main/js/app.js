@@ -12,6 +12,7 @@ class App extends React.Component {
         super(props);
         this.onAddTodoList = this.onAddTodoList.bind(this);
         this.addTodoList = this.addTodoList.bind(this);
+        this.onDeleteTodoList = this.onDeleteTodoList.bind(this);
         this.handleChangeTodoList = this.handleChangeTodoList.bind(this);
         this.state = {todoList:[], listLinks:{}, newTodoList:""};
     }
@@ -29,12 +30,21 @@ class App extends React.Component {
         });
     }
 
-    onAddTodoList(newTodo) {
+    onAddTodoList(newTodoList) {
         client({
             method: 'POST',
             path: this.state.listLinks.self.href,
-            entity: newTodo,
+            entity: newTodoList,
             headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            this.getTodoLists();
+        });
+    }
+
+    onDeleteTodoList(todoList) {
+        client({
+            method: 'DELETE',
+            path: todoList._links.self.href
         }).then(response => {
             this.getTodoLists();
         });
@@ -52,7 +62,7 @@ class App extends React.Component {
 
     render() {
         var todoList = this.state.todoList.map((todoList, index) =>
-            <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} />
+            <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} onDeleteList={this.onDeleteTodoList}/>
         );
         return (
             <span>
@@ -81,6 +91,7 @@ class TodoList extends React.Component{
         this.onAdd = this.onAdd.bind(this);
         this.addTodo = this.addTodo.bind(this);
         this.handleChangeTodo = this.handleChangeTodo.bind(this);
+        this.handleDeleteList = this.handleDeleteList.bind(this);
         this.state = {todos:[], links: {}, newTodo: "", completed: false, title: "Missing"}
     }
     componentDidMount() {
@@ -137,6 +148,10 @@ class TodoList extends React.Component{
         this.setState({newTodo: event.target.value, completed: false});
     }
 
+    handleDeleteList() {
+        this.props.onDeleteList(this.props.todoList);
+    }
+
     render(){
         var todos = this.state.todos.map(todo =>
             <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.onDelete} onUpdate={this.onUpdate} />
@@ -144,6 +159,7 @@ class TodoList extends React.Component{
         return (
             <span>
                 <h1>{this.props.todoList.title}</h1>
+                <button onClick={this.handleDeleteList}>Delete List</button>
             <table>
                 <tbody>
                 <tr>

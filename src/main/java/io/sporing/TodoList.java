@@ -17,7 +17,10 @@ public class TodoList {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
-    @OneToMany(mappedBy = "todoList")
+    @OneToMany(
+            mappedBy = "todoList",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
     private List<Todo> todos;
 
     public TodoList(String title) {
