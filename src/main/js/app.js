@@ -10,7 +10,10 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {todoList:[], listLinks:{}};
+        this.onAddTodoList = this.onAddTodoList.bind(this);
+        this.addTodoList = this.addTodoList.bind(this);
+        this.handleChangeTodoList = this.handleChangeTodoList.bind(this);
+        this.state = {todoList:[], listLinks:{}, newTodoList:""};
     }
 
     componentDidMount() {
@@ -26,6 +29,27 @@ class App extends React.Component {
         });
     }
 
+    onAddTodoList(newTodo) {
+        client({
+            method: 'POST',
+            path: this.state.listLinks.self.href,
+            entity: newTodo,
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            this.getTodoLists();
+        });
+    }
+
+    addTodoList(event) {
+        const newTodoList = {title: this.state.newTodoList}
+        this.onAddTodoList(newTodoList);
+        this.setState({newTodoList: ""});
+    }
+
+    handleChangeTodoList(event) {
+        this.setState({newTodoList: event.target.value});
+    }
+
     render() {
         var todoList = this.state.todoList.map((todoList, index) =>
             <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} />
@@ -35,6 +59,15 @@ class App extends React.Component {
             <ul>
                 {todoList}
             </ul>
+                <input
+                    placeholder="Name Your Todo List"
+                    value={this.state.newTodoList}
+                    // onKeyDown={this.handleNewTodoKeyDown}
+                    onChange={this.handleChangeTodoList}
+                    autoFocus={true}
+                    name="newTodoList"
+                />
+                <button onClick={this.addTodoList}>Add Todo List</button>
             </span>
         )
     }
@@ -85,7 +118,6 @@ class TodoList extends React.Component{
         });
     }
 
-
     getTodos() {
         client({method: 'GET', path: this.props.todoList._links.todos.href,}).then(response => {
             this.setState({
@@ -126,7 +158,6 @@ class TodoList extends React.Component{
                     value={this.state.newTodo}
                     // onKeyDown={this.handleNewTodoKeyDown}
                     onChange={this.handleChangeTodo}
-                    autoFocus={true}
                     name="newTodo"
                 />
             <button onClick={this.addTodo}>Add Todo</button>
