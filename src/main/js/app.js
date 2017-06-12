@@ -18,25 +18,15 @@ class App extends React.Component {
     }
 
     getTodoLists() {
-        console.log("getTodoLists");
-
         client({method: 'GET', path: '/todoList'}).then(response => {
-            console.log("getTodo lists");
             this.setState({
                 todoList: response.entity._embedded.todoList,
                 listLinks: response.entity._links
             });
         });
-
-        console.log("todo list:");
-        console.log(this.state.todoList);
-        console.log("links");
-        console.log(this.state.listLinks);
     }
 
     render() {
-        console.log("render");
-        console.log(todoList);
         var todoList = this.state.todoList.map((todoList, index) =>
             <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} />
         );
@@ -85,10 +75,6 @@ class TodoList extends React.Component{
     }
 
     onAdd(newTodo) {
-        console.log("in on Add")
-        console.log(this.state.todos);
-        console.log(this.state.links.self.href);
-        console.log(newTodo);
         client({
             method: 'POST',
             path: '/todos',
@@ -101,11 +87,7 @@ class TodoList extends React.Component{
 
 
     getTodos() {
-        console.log("getTodos");
-        console.log(this.props.todoList);
-
         client({method: 'GET', path: this.props.todoList._links.todos.href,}).then(response => {
-            console.log("getTodo lists");
             this.setState({
                 todos: response.entity._embedded.todos,
                 links: response.entity._links
@@ -114,18 +96,12 @@ class TodoList extends React.Component{
     }
 
     addTodo(event) {
-        console.log("adding todo...");
-        console.log(event);
         const newTodo = {todo: this.state.newTodo, completed: false, todoList: this.props.todoList._links.self.href}
         this.onAdd(newTodo);
         this.setState({newTodo: "", completed: false});
     }
 
     handleChangeTodo(event) {
-        console.log("handle change todo");
-        console.log(event);
-        console.log(event.target.value);
-        console.log(this);
         this.setState({newTodo: event.target.value, completed: false});
     }
 
