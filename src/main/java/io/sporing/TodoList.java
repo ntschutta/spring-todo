@@ -19,7 +19,7 @@ public class TodoList {
     private String title;
     @OneToMany(
             mappedBy = "todoList",
-            cascade = CascadeType.ALL,
+            cascade = CascadeType.REMOVE,
             fetch = FetchType.EAGER)
     private List<Todo> todos;
 
