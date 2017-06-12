@@ -53,10 +53,32 @@ class App extends React.Component {
 class TodoList extends React.Component{
     constructor(props) {
         super(props);
+        this.onDelete = this.onDelete.bind(this);
+        this.onUpdate = this.onUpdate.bind(this);
         this.state = {todos:[], links: {}, newTodo: "", completed: false, title: "Missing"}
     }
     componentDidMount() {
         this.getTodos();
+    }
+
+    onDelete(todo) {
+        client({
+            method: 'DELETE',
+            path: todo._links.self.href
+        }).then(response => {
+            this.getTodos();
+        });
+    }
+
+    onUpdate(todo) {
+        client({
+            method: 'PUT',
+            path: todo._links.self.href,
+            entity: todo,
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            this.getTodos();
+        });
     }
 
     getTodos() {
@@ -74,7 +96,7 @@ class TodoList extends React.Component{
 
     render(){
         var todos = this.state.todos.map(todo =>
-            <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.props.onDelete} onUpdate={this.props.onUpdate} />
+            <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.onDelete} onUpdate={this.onUpdate} />
         );
         return (
             <span>
