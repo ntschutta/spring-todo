@@ -159,7 +159,6 @@ class TodoList extends React.Component{
         return (
             <span>
                 <h1>{this.props.todoList.title}</h1>
-                <button onClick={this.handleDeleteList}>Delete List</button>
             <table>
                 <tbody>
                 <tr>
@@ -177,6 +176,9 @@ class TodoList extends React.Component{
                     name="newTodo"
                 />
             <button onClick={this.addTodo}>Add Todo</button>
+                <div>
+                <button onClick={this.handleDeleteList}>Delete List</button>
+                </div>
             </span>
         )
     }
