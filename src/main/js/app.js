@@ -6,6 +6,9 @@ const client = require('./client');
 import update from 'immutability-helper';
 import { Button } from 'react-bootstrap';
 import { Table } from 'react-bootstrap';
+import { PageHeader } from 'react-bootstrap';
+import { Panel } from 'react-bootstrap';
+import { Checkbox } from 'react-bootstrap';
 
 class App extends React.Component {
 
@@ -75,13 +78,14 @@ class App extends React.Component {
 
     render() {
         var todoList = this.state.todoList.map((todoList, index) =>
-            <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} onDeleteList={this.onDeleteTodoList} onUpdateList={this.onUpdateTodoList}/>
+            <Panel key={todoList._links.self.href}>
+              <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} onDeleteList={this.onDeleteTodoList} onUpdateList={this.onUpdateTodoList}/>
+            </Panel>
         );
         return (
             <span>
-            <ul>
                 {todoList}
-            </ul>
+                <Panel>
                 <input
                     placeholder="Name Your Todo List"
                     value={this.state.newTodoList}
@@ -91,6 +95,7 @@ class App extends React.Component {
                     name="newTodoList"
                 />
                 <Button bsSize="large" onClick={this.addTodoList}>Add Todo List</Button>
+                </Panel>
             </span>
         )
     }
@@ -184,7 +189,7 @@ class TodoList extends React.Component{
         );
         return (
             <span>
-                <h1><input name="todo-list-title" type="text" value={this.props.todoList.title} onChange={this.handleTitleUpdate}/></h1>
+                <PageHeader><input name="todo-list-title" type="text" value={this.props.todoList.title} onChange={this.handleTitleUpdate}/></PageHeader>
             <Table striped>
                 <tbody>
                 <tr>
@@ -249,9 +254,7 @@ class TodoItem extends React.Component{
             <tr>
                 <td><input name="todo-text" type="text" value={this.state.myTodo.todo} onChange={this.handleUpdate}/> </td>
                 <td>
-                    <input
-                        className="toggle"
-                        type="checkbox"
+                    <Checkbox
                         checked={this.state.myTodo.completed}
                         onChange={this.toggleCompleted} />
                 </td>
