@@ -3,7 +3,6 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const client = require('./client');
-const follow = require('./follow');
 import update from 'immutability-helper';
 import { Button } from 'react-bootstrap';
 
