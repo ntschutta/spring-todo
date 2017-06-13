@@ -167,6 +167,7 @@ class TodoList extends React.Component{
                 <tr>
                     <th>Todo</th>
                     <th>Completed?</th>
+                    <th></th>
                 </tr>
                 {todos}
                 </tbody>
