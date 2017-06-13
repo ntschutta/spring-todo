@@ -14,6 +14,7 @@ class App extends React.Component {
         this.onAddTodoList = this.onAddTodoList.bind(this);
         this.addTodoList = this.addTodoList.bind(this);
         this.onDeleteTodoList = this.onDeleteTodoList.bind(this);
+        this.onUpdateTodoList = this.onUpdateTodoList.bind(this);
         this.handleChangeTodoList = this.handleChangeTodoList.bind(this);
         this.state = {todoList:[], listLinks:{}, newTodoList:""};
     }
@@ -51,6 +52,17 @@ class App extends React.Component {
         });
     }
 
+    onUpdateTodoList(todoList) {
+        client({
+            method: 'PUT',
+            path: todoList._links.self.href,
+            entity: todoList,
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            this.getTodoLists();
+        });
+    }
+
     addTodoList(event) {
         const newTodoList = {title: this.state.newTodoList}
         this.onAddTodoList(newTodoList);
@@ -63,7 +75,7 @@ class App extends React.Component {
 
     render() {
         var todoList = this.state.todoList.map((todoList, index) =>
-            <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} onDeleteList={this.onDeleteTodoList}/>
+            <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} onDeleteList={this.onDeleteTodoList} onUpdateList={this.onUpdateTodoList}/>
         );
         return (
             <span>
@@ -93,7 +105,8 @@ class TodoList extends React.Component{
         this.addTodo = this.addTodo.bind(this);
         this.handleChangeTodo = this.handleChangeTodo.bind(this);
         this.handleDeleteList = this.handleDeleteList.bind(this);
-        this.state = {todos:[], links: {}, newTodo: "", completed: false, title: "Missing"}
+        this.handleTitleUpdate = this.handleTitleUpdate.bind(this);
+        this.state = {myList: this.props.todoList, todos:[], links: {}, newTodo: "", completed: false, title: "Missing"}
     }
     componentDidMount() {
         this.getTodos();
@@ -155,14 +168,24 @@ class TodoList extends React.Component{
         this.props.onDeleteList(this.props.todoList);
     }
 
+    handleTitleUpdate(event) {
+        const updatedTodoList = update(this.state.myList, {
+            title: {$set: event.target.value}
+        })
+        this.setState({
+            title: event.target.value
+        })
+        this.props.onUpdateList(updatedTodoList);
+    }
+
     render(){
         var todos = this.state.todos.map(todo =>
             <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.onDelete} onUpdate={this.onUpdate} />
         );
         return (
             <span>
-                <h1>{this.props.todoList.title}</h1>
-            <Table striped="true">
+                <h1><input name="todo-list-title" type="text" value={this.props.todoList.title} onChange={this.handleTitleUpdate}/></h1>
+            <Table striped>
                 <tbody>
                 <tr>
                     <th>Todo</th>
