@@ -9,6 +9,7 @@ import { Table } from 'react-bootstrap';
 import { PageHeader } from 'react-bootstrap';
 import { Panel } from 'react-bootstrap';
 import { Checkbox } from 'react-bootstrap';
+import { InputGroup } from 'react-bootstrap';
 
 class App extends React.Component {
 
@@ -94,7 +95,7 @@ class App extends React.Component {
                     autoFocus={true}
                     name="newTodoList"
                 />
-                <Button bsSize="large" onClick={this.addTodoList}>Add Todo List</Button>
+                <Button bsStyle="primary" bsSize="large" onClick={this.addTodoList}>New Todo List</Button>
                 </Panel>
             </span>
         )
@@ -200,6 +201,7 @@ class TodoList extends React.Component{
                 {todos}
                 </tbody>
             </Table>
+                <InputGroup>
                 <input
                     placeholder="What needs to be done?"
                     value={this.state.newTodo}
@@ -207,10 +209,11 @@ class TodoList extends React.Component{
                     onChange={this.handleChangeTodo}
                     name="newTodo"
                 />
-            <Button onClick={this.addTodo}>Add Todo</Button>
+                <Button bsStyle="primary" onClick={this.addTodo}>Add Todo</Button>
                 <div>
-                <Button onClick={this.handleDeleteList}>Delete List</Button>
+                    <Button bsStyle="danger" onClick={this.handleDeleteList}>Delete List</Button>
                 </div>
+                </InputGroup>
             </span>
         )
     }
@@ -259,7 +262,7 @@ class TodoItem extends React.Component{
                         onChange={this.toggleCompleted} />
                 </td>
                 <td>
-                    <Button onClick={this.handleDelete}>Delete</Button>
+                    <Button bsStyle="danger" onClick={this.handleDelete}>Delete</Button>
                 </td>
             </tr>
         )
