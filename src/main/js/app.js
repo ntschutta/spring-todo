@@ -5,6 +5,7 @@ const ReactDOM = require('react-dom');
 const client = require('./client');
 const follow = require('./follow');
 import update from 'immutability-helper';
+import { Button } from 'react-bootstrap';
 
 class App extends React.Component {
 
@@ -77,7 +78,7 @@ class App extends React.Component {
                     autoFocus={true}
                     name="newTodoList"
                 />
-                <button onClick={this.addTodoList}>Add Todo List</button>
+                <Button bsSize="large" onClick={this.addTodoList}>Add Todo List</Button>
             </span>
         )
     }
@@ -99,6 +100,8 @@ class TodoList extends React.Component{
     }
 
     onDelete(todo) {
+        console.log("delete todo item");
+        console.log(todo._links.self.href);
         client({
             method: 'DELETE',
             path: todo._links.self.href
@@ -175,9 +178,9 @@ class TodoList extends React.Component{
                     onChange={this.handleChangeTodo}
                     name="newTodo"
                 />
-            <button onClick={this.addTodo}>Add Todo</button>
+            <Button onClick={this.addTodo}>Add Todo</Button>
                 <div>
-                <button onClick={this.handleDeleteList}>Delete List</button>
+                <Button onClick={this.handleDeleteList}>Delete List</Button>
                 </div>
             </span>
         )
@@ -229,7 +232,7 @@ class TodoItem extends React.Component{
                         onChange={this.toggleCompleted} />
                 </td>
                 <td>
-                    <button onClick={this.handleDelete}>Delete</button>
+                    <Button onClick={this.handleDelete}>Delete</Button>
                 </td>
             </tr>
         )
