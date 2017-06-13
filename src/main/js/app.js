@@ -5,6 +5,7 @@ const ReactDOM = require('react-dom');
 const client = require('./client');
 import update from 'immutability-helper';
 import { Button } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 
 class App extends React.Component {
 
@@ -161,7 +162,7 @@ class TodoList extends React.Component{
         return (
             <span>
                 <h1>{this.props.todoList.title}</h1>
-            <table>
+            <Table striped="true">
                 <tbody>
                 <tr>
                     <th>Todo</th>
@@ -169,7 +170,7 @@ class TodoList extends React.Component{
                 </tr>
                 {todos}
                 </tbody>
-            </table>
+            </Table>
                 <input
                     placeholder="What needs to be done?"
                     value={this.state.newTodo}
