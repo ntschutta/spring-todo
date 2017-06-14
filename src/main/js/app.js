@@ -4,12 +4,13 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const client = require('./client');
 import update from 'immutability-helper';
-import { Button } from 'react-bootstrap';
-import { Table } from 'react-bootstrap';
-import { PageHeader } from 'react-bootstrap';
-import { Panel } from 'react-bootstrap';
-import { Checkbox } from 'react-bootstrap';
-import { InputGroup } from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
+import {Table} from 'react-bootstrap';
+import {PageHeader} from 'react-bootstrap';
+import {Panel} from 'react-bootstrap';
+import {Checkbox} from 'react-bootstrap';
+import {FormControl} from 'react-bootstrap';
+import {FormGroup} from 'react-bootstrap';
 
 class App extends React.Component {
 
@@ -20,7 +21,7 @@ class App extends React.Component {
         this.onDeleteTodoList = this.onDeleteTodoList.bind(this);
         this.onUpdateTodoList = this.onUpdateTodoList.bind(this);
         this.handleChangeTodoList = this.handleChangeTodoList.bind(this);
-        this.state = {todoList:[], listLinks:{}, newTodoList:""};
+        this.state = {todoList: [], listLinks: {}, newTodoList: ""};
     }
 
     componentDidMount() {
@@ -80,29 +81,31 @@ class App extends React.Component {
     render() {
         var todoList = this.state.todoList.map((todoList, index) =>
             <Panel key={todoList._links.self.href}>
-              <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]} onDeleteList={this.onDeleteTodoList} onUpdateList={this.onUpdateTodoList}/>
+                <TodoList key={todoList._links.self.href} todoList={this.state.todoList[index]}
+                          onDeleteList={this.onDeleteTodoList} onUpdateList={this.onUpdateTodoList}/>
             </Panel>
         );
         return (
             <span>
                 {todoList}
                 <Panel>
-                <input
-                    placeholder="Name Your Todo List"
-                    value={this.state.newTodoList}
-                    // onKeyDown={this.handleNewTodoKeyDown}
-                    onChange={this.handleChangeTodoList}
-                    autoFocus={true}
-                    name="newTodoList"
-                />
-                <Button bsStyle="primary" bsSize="large" onClick={this.addTodoList}>New Todo List</Button>
+                    <FormGroup>
+                        <FormControl
+                            placeholder="Name Your Todo List"
+                            value={this.state.newTodoList}
+                            onChange={this.handleChangeTodoList}
+                            autoFocus={true}
+                            name="newTodoList"
+                        />
+                        <Button bsStyle="primary" bsSize="large" onClick={this.addTodoList}>New Todo List</Button>
+                    </FormGroup>
                 </Panel>
             </span>
         )
     }
 }
 
-class TodoList extends React.Component{
+class TodoList extends React.Component {
     constructor(props) {
         super(props);
         this.onDelete = this.onDelete.bind(this);
@@ -112,8 +115,16 @@ class TodoList extends React.Component{
         this.handleChangeTodo = this.handleChangeTodo.bind(this);
         this.handleDeleteList = this.handleDeleteList.bind(this);
         this.handleTitleUpdate = this.handleTitleUpdate.bind(this);
-        this.state = {myList: this.props.todoList, todos:[], links: {}, newTodo: "", completed: false, title: "Missing"}
+        this.state = {
+            myList: this.props.todoList,
+            todos: [],
+            links: {},
+            newTodo: "",
+            completed: false,
+            title: "Missing"
+        }
     }
+
     componentDidMount() {
         this.getTodos();
     }
@@ -184,13 +195,14 @@ class TodoList extends React.Component{
         this.props.onUpdateList(updatedTodoList);
     }
 
-    render(){
+    render() {
         var todos = this.state.todos.map(todo =>
-            <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.onDelete} onUpdate={this.onUpdate} />
+            <TodoItem key={todo._links.self.href} todo={todo} onDelete={this.onDelete} onUpdate={this.onUpdate}/>
         );
         return (
             <span>
-                <PageHeader><input name="todo-list-title" type="text" value={this.props.todoList.title} onChange={this.handleTitleUpdate}/></PageHeader>
+                <PageHeader><FormControl bsSize="lg" name="todo-list-title" type="text" value={this.props.todoList.title}
+                                   onChange={this.handleTitleUpdate}/></PageHeader>
             <Table striped>
                 <tbody>
                 <tr>
@@ -201,8 +213,8 @@ class TodoList extends React.Component{
                 {todos}
                 </tbody>
             </Table>
-                <InputGroup>
-                <input
+                <FormGroup>
+                <FormControl
                     placeholder="What needs to be done?"
                     value={this.state.newTodo}
                     // onKeyDown={this.handleNewTodoKeyDown}
@@ -213,13 +225,13 @@ class TodoList extends React.Component{
                 <div>
                     <Button bsStyle="danger" onClick={this.handleDeleteList}>Delete List</Button>
                 </div>
-                </InputGroup>
+                </FormGroup>
             </span>
         )
     }
 }
 
-class TodoItem extends React.Component{
+class TodoItem extends React.Component {
     constructor(props) {
         super(props);
         this.handleDelete = this.handleDelete.bind(this);
@@ -255,11 +267,12 @@ class TodoItem extends React.Component{
     render() {
         return (
             <tr>
-                <td><input name="todo-text" type="text" value={this.state.myTodo.todo} onChange={this.handleUpdate}/> </td>
+                <td><FormControl name="todo-text" type="text" value={this.state.myTodo.todo} onChange={this.handleUpdate}/>
+                </td>
                 <td>
                     <Checkbox
                         checked={this.state.myTodo.completed}
-                        onChange={this.toggleCompleted} />
+                        onChange={this.toggleCompleted}/>
                 </td>
                 <td>
                     <Button bsStyle="danger" onClick={this.handleDelete}>Delete</Button>
