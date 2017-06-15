@@ -121,7 +121,7 @@ class TodoList extends React.Component {
             links: {},
             newTodo: "",
             completed: false,
-            title: "Missing"
+            title: this.props.todoList.title
         }
     }
 
@@ -223,7 +223,7 @@ class TodoList extends React.Component {
                 />
                 <Button bsStyle="primary" onClick={this.addTodo}>Add Todo</Button>
                 <div>
-                    <Button bsStyle="danger" onClick={this.handleDeleteList}>Delete List</Button>
+                    <Button bsStyle="danger" onClick={this.handleDeleteList}>Delete {this.state.title}</Button>
                 </div>
                 </FormGroup>
             </span>
