@@ -8,4 +8,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource(collectionResourceRel = "todoList", path = "todoList")
 public interface TodoListRepository extends JpaRepository <TodoList, Long>  {
+    TodoList findByTitle(String title);
 }
