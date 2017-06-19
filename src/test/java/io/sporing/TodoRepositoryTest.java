@@ -24,6 +24,7 @@ public class TodoRepositoryTest {
 
     private TodoList todoList;
     private TodoList anotherTodoList;
+    private String todoGetMilk = "get milk";
 
     @Before
     public void setup() throws Exception {
@@ -42,40 +43,42 @@ public class TodoRepositoryTest {
     @Test
     public void testCreate() {
         Todo todoItem = new Todo();
-        todoItem.setTodo("buy milk");
+        String todoBuyMilk = "buy milk";
+        todoItem.setTodo(todoBuyMilk);
         todoItem.setTodoList(todoList);
         repository.save(todoItem);
 
-        Todo loadedItem = repository.findByTodo("buy milk");
-        assertThat(loadedItem.getTodo()).isEqualTo("buy milk");
+        Todo loadedItem = repository.findByTodo(todoBuyMilk);
+        assertThat(loadedItem.getTodo()).isEqualTo(todoBuyMilk);
         assertThat(loadedItem.isCompleted()).isFalse();
     }
 
     @Test
     public void testUpdate() {
-        Todo loadedTodo = repository.findByTodo("get milk");
+        Todo loadedTodo = repository.findByTodo(todoGetMilk);
         assertThat(loadedTodo.isCompleted()).isFalse();
         loadedTodo.setCompleted(true);
-        loadedTodo.setTodo("buy chocolate milk");
+        String todoChocMilk = "buy chocolate milk";
+        loadedTodo.setTodo(todoChocMilk);
         repository.save(loadedTodo);
 
-        Todo verifyTodo = repository.findByTodo("buy chocolate milk");
+        Todo verifyTodo = repository.findByTodo(todoChocMilk);
         assertThat(verifyTodo.isCompleted()).isTrue();
-        assertThat(verifyTodo.getTodo()).isEqualTo("buy chocolate milk");
+        assertThat(verifyTodo.getTodo()).isEqualTo(todoChocMilk);
     }
 
     @Test
     public void testFindByTodo() {
-        Todo loadedTodo = repository.findByTodo("get milk");
+        Todo loadedTodo = repository.findByTodo(todoGetMilk);
         assertThat(loadedTodo.isCompleted()).isFalse();
-        assertThat(loadedTodo.getTodo()).isEqualTo("get milk");
+        assertThat(loadedTodo.getTodo()).isEqualTo(todoGetMilk);
     }
 
     @Test
     public void testDelete() {
-        Todo loadedTodo = repository.findByTodo("get milk");
+        Todo loadedTodo = repository.findByTodo(todoGetMilk);
         repository.delete(loadedTodo);
-        Todo verifyTodo = repository.findByTodo("get milk");
+        Todo verifyTodo = repository.findByTodo(todoGetMilk);
         assertThat(verifyTodo).isNull();
 
         List<Todo> allTodos = repository.findAll();
