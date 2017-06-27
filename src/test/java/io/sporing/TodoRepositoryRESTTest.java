@@ -10,12 +10,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -128,7 +135,10 @@ public class TodoRepositoryRESTTest {
         updateTodo.setCompleted(false);
         String updateTodoJson = convertToJson(updateTodo);
 
-        this.mockMvc.perform(put("/todos/9")
+        List<String> set = getNumbersInResponse();
+        String id = set.get(4);
+
+        this.mockMvc.perform(put("/todos/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateTodoJson))
                 .andExpect(status().is2xxSuccessful());
@@ -142,20 +152,46 @@ public class TodoRepositoryRESTTest {
     @Test
     @WithMockUser(username="admin",roles={"ALL"})
     public void deleteTodo() throws Exception {
+        List<String> set = getNumbersInResponse();
+        String id = set.get(4);
+
         this.mockMvc.perform(get(TODOS_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath($_EMBEDDED_TODOS, hasSize(3)));
-        this.mockMvc.perform(delete("/todos/25"))
+        this.mockMvc.perform(delete("/todos/" + id))
                 .andExpect(status().is2xxSuccessful());
         this.mockMvc.perform(get(TODOS_URL))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath($_EMBEDDED_TODOS, hasSize(2)));
     }
 
+    /* Helper method to find any numbers in the mock response from the mock call. The first set of numbers
+       corresponds to the IDs of the items we are getting back which we can then use as arguments to other tests
+       which makes them less fragile - with every new test, the id count increments by however many items we add
+       breaking any tests that rely on retrieving a specific item.
+     */
+    private List<String> getNumbersInResponse() throws Exception {
+        ResultActions resultActions = this.mockMvc.perform(get(TODOS_URL));
+        MvcResult mockResult = resultActions.andReturn();
+        MockHttpServletResponse mockResponse = mockResult.getResponse();
+        String responseAsString = mockResponse.getContentAsString();
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(responseAsString);
+
+        List<String> numbersInResponse = new ArrayList<>();
+        while (matcher.find()) {
+            numbersInResponse.add(matcher.group());
+        }
+        return numbersInResponse;
+    }
+
     @Test
     @WithMockUser(username="admin",roles={"ALL"})
     public void getOneTodo() throws Exception {
-        this.mockMvc.perform(get("/todos/12"))
+        List<String> set = getNumbersInResponse();
+        String id = set.get(4);
+
+        this.mockMvc.perform(get("/todos/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.todo", is(GO_TO_BANK)))
                 .andExpect(jsonPath("$.completed", is(true)));
