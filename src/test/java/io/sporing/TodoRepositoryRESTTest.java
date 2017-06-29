@@ -78,7 +78,7 @@ public class TodoRepositoryRESTTest {
 
     @Test
     @WithMockUser(username="admin",roles={"ALL"})
-    public void getTodos() throws Exception {
+    public void getAllTodos() throws Exception {
         this.mockMvc.perform(get(TODOS_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath($_EMBEDDED_TODOS, hasSize(3)))
