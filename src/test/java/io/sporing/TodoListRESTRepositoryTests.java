@@ -86,9 +86,6 @@ public class TodoListRESTRepositoryTests {
         updateTodoList.setTitle(todoListTitle);
         String updateTodoLisstJson = convertToJson(updateTodoList);
 
-//        List<String> set = getNumbersInResponse();
-//        String id = set.get(4);
-
         this.mockMvc.perform(put(TODO_LIST_URL + "/2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateTodoLisstJson))
